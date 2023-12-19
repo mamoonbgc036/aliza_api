@@ -1,8 +1,12 @@
 <?php
 
-use App\Http\Controllers\Api\V1\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\V1\ProductController;
+use App\Http\Controllers\Api\V1\CategoryController;
+use App\Http\Controllers\Api\V1\Auth\LoginController;
+use App\Http\Controllers\Api\V1\Auth\LogoutController;
+use App\Http\Controllers\Api\V1\Auth\RegisterController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,6 +23,19 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+    Route::post('user/logout', [LogoutController::class, 'logout'])->name('user.logout');
+});
+
 Route::group(['prefix' => 'v1'], function () {
+    Route::post('user/register', [RegisterController::class, 'register'])->name('user.register');
+    Route::post('user/login', [LoginController::class, 'login'])->name('user.login');
+
+
+    //Product and Category
     Route::apiResource('product', ProductController::class);
+    Route::apiResource('category', CategoryController::class);
 });
