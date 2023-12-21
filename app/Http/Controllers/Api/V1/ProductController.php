@@ -20,7 +20,8 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return new ProductCollection(Product::withTrashed()->paginate());
+        // return new ProductCollection(Product::with('productImages')->withTrashed()->paginate());
+        return response()->json(Product::with('productImages')->withTrashed()->paginate());
     }
 
     /**
@@ -39,7 +40,7 @@ class ProductController extends Controller
         ]);
 
         if ($validatedInfo->fails()) {
-            return $validatedInfo->errors();
+            return response()->json($validatedInfo->errors(), 422);
         }
         $info = $validatedInfo->validated();
         $info['created_by'] = Auth::user()->id;
