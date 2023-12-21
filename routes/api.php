@@ -23,11 +23,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
     Route::post('user/logout', [LogoutController::class, 'logout'])->name('user.logout');
+    Route::apiResource('product', ProductController::class);
+    Route::apiResource('category', CategoryController::class);
 });
 
 Route::group(['prefix' => 'v1'], function () {
@@ -36,6 +38,5 @@ Route::group(['prefix' => 'v1'], function () {
 
 
     //Product and Category
-    Route::apiResource('product', ProductController::class);
-    Route::apiResource('category', CategoryController::class);
+    // Route::apiResource('product', ProductController::class);
 });

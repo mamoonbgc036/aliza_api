@@ -22,20 +22,21 @@ class StoreProductRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "title" => ['required'],
-            "description" => ['required'],
-            "price" => ['required'],
-            "oldPrice" => ['required'],
-            "categoryId" => ['required'],
-            "unit" => ['required']
+            // "productData.title" => ['required'],
+            // "productData.description" => ['required'],
+            // "productData.price" => ['required'],
+            // "productData.old_price" => ['required'],
+            // "productData.category_id" => ['required'],
+            // "productData.unit" => ['required'],
+            // 'image' => 'nullable'
         ];
     }
 
-    public function prepareForValidation()
-    {
-        $this->merge([
-            'category_id' => $this->categoryId,
-            'old_price' => $this->oldPrice
-        ]);
-    }
+    // public function prepareForValidation()
+    // {
+    //     $this->merge([
+    //         'productData.category_id' => $this->productData,
+    //         'old_price' => $this->oldPrice
+    //     ]);
+    // }
 }
