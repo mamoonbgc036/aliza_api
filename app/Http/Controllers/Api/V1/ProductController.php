@@ -43,12 +43,18 @@ class ProductController extends Controller
         }
         $info = $validatedInfo->validated();
         $info['created_by'] = Auth::user()->id;
+        $created_product_instance = Product::create($info);
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
                 $filename    = Storage::put('/product', $image);
+                $url = env('APP_URL') . '/storage/' . $filename;
+                $created_product_instance->productImages()->create([
+                    'path' => $filename,
+                    'url' => $url
+                ]);
             }
         }
-        return new ProductResource(Product::create($info));
+        return new ProductResource($created_product_instance);
     }
 
     /**
