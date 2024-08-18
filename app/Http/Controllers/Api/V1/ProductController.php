@@ -4,24 +4,33 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\V1\ProductResource;
 use App\Http\Resources\V1\ProductCollection;
 use App\Http\Requests\V1\StoreProductRequest;
 use App\Http\Requests\V1\UpdateProductRequest;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        // return $request->user();
         // return new ProductCollection(Product::with('productImages')->withTrashed()->paginate());
-        return response()->json(Product::with('productImages')->withTrashed()->paginate());
+        return response()->json(Product::with('productImages')->paginate());
+    }
+
+    public function test()
+    {
+        $data = Http::get('https://jsonplaceholder.typicode.com/posts');
+        dd($data->json());
     }
 
     /**
@@ -29,7 +38,7 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        $productInfo =  json_decode($request->productData, true);
+        $productInfo = json_decode($request->productData, true);
         $validatedInfo = Validator::make($productInfo, [
             'title' => 'required',
             'price' => 'required',
@@ -47,7 +56,7 @@ class ProductController extends Controller
         $created_product_instance = Product::create($info);
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
-                $filename    = Storage::put('/product', $image);
+                $filename = Storage::put('/product', $image);
                 $url = env('APP_URL') . '/storage/' . $filename;
                 $created_product_instance->productImages()->create([
                     'path' => $filename,
@@ -66,12 +75,25 @@ class ProductController extends Controller
         return new ProductResource($product);
     }
 
+    // public function edit(Product $product)
+    // {
+    //     return response()->json($product->catName);
+    // }
+
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateProductRequest $request, Product $product)
+    public function update(Request $request, Product $product)
     {
-        return $product->update($request->all());
+        $productInfo = $request->input('productData');
+
+        Log::info($productInfo);
+
+        // If productData is a JSON string, you can decode it
+        $productInfo = json_decode($productInfo, true);
+
+        // Return the decoded product data
+        return response()->json($productInfo);
     }
 
     /**
@@ -79,6 +101,6 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        return $product->delete();
+        return $product->forceDelete();
     }
 }

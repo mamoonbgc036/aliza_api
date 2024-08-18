@@ -1,7 +1,10 @@
 <?php
 
+use App\Http\Controllers\Api\V1\ProductController;
+use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Whoops\Run;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,6 +18,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    dd(auth()->user());
     return view('welcome');
 });
+
+
+Route::get('/data', [ProductController::class, 'test']);
