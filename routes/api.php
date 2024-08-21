@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\ProductController;
@@ -30,6 +31,7 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::post('user/logout', [LogoutController::class, 'logout'])->name('user.logout');
     Route::apiResource('product', ProductController::class);
     Route::apiResource('category', CategoryController::class);
+    Route::get('get-user', [UserController::class, 'getUser'])->name('get.user');
 });
 
 Route::group(['prefix' => 'v1'], function () {

@@ -23,8 +23,8 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         // return $request->user();
-        // return new ProductCollection(Product::with('productImages')->withTrashed()->paginate());
-        return response()->json(Product::with('productImages')->paginate());
+        return new ProductCollection(Product::with('productImages')->paginate());
+        // return response()->json(Product::with('productImages')->paginate());
     }
 
     public function test()
@@ -85,15 +85,21 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        $productInfo = $request->input('productData');
+        $validatedInfo = Validator::make($request->all(), [
+            'title' => 'required',
+            'price' => 'required',
+            'old_price' => 'required',
+            'description' => 'required',
+            'unit' => 'required',
+            'category_id' => 'required'
+        ])->validated();
 
-        Log::info($productInfo);
+        $product->update($validatedInfo);
 
-        // If productData is a JSON string, you can decode it
-        $productInfo = json_decode($productInfo, true);
-
-        // Return the decoded product data
-        return response()->json($productInfo);
+        return response()->json([
+            'message' => 'Product updated successfully',
+            'product' => $product
+        ]);
     }
 
     /**
@@ -101,6 +107,14 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        return $product->forceDelete();
+        $user = request()->user();
+
+        if ($user->type != 1) {
+            return response()->json(['message' => 'Unauthorized action'], 403);
+        }
+
+        $product->delete();
+
+        return response()->json(['message' => 'Product deleted successfully']);
     }
 }

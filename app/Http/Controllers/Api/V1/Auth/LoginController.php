@@ -13,13 +13,14 @@ class LoginController extends Controller
 {
     public function login(LoginUserRequest $request)
     {
-        $user_login_validation = $request->validated();
-        $is_user_exist = User::where('phone', $user_login_validation['phone'])->first();
-        if ($is_user_exist && Hash::check($user_login_validation['password'], $is_user_exist->password)) {
-            $token = $is_user_exist->createToken('api_token')->plainTextToken;
-            return response()->json(['user' => $is_user_exist, 'token' => $token]);
+        // Attempt to authenticate the user
+        if (Auth::attempt($request->only('email', 'password'))) {
+            $user = Auth::user();
+            $token = $user->createToken('api_token')->plainTextToken;
+            return response()->json(['user' => $user, 'token' => $token]);
         }
 
+        // Return the token and user details
         return response()->json(['warning' => 'Invalid credentials'], 401);
     }
 }

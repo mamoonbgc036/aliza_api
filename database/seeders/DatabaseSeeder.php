@@ -2,8 +2,12 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
+use App\Models\Role;
 
 class DatabaseSeeder extends Seeder
 {
@@ -12,11 +16,52 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
+        // Creating the 'admin' role
+        $adminRole = Role::factory()->create([
+            'name' => 'admin',
+        ]);
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        // Creating the 'user' role
+        $userRole = Role::factory()->create([
+            'name' => 'user',
+        ]);
+
+        // Creating the 'admin' user
+        $adminUser = User::factory()->create([
+            'name' => 'admin',
+            'email' => 'admin@gmail.com',
+            'type' => 1,
+            'image' => fake()->imageUrl(), // This generates a placeholder image URL
+            'password' => Hash::make('mamoon'),
+        ]);
+
+        // Creating the 'user' user
+        $normalUser = User::factory()->create([
+            'name' => 'user',
+            'email' => 'user@gmail.com',
+            'type' => 2,
+            'image' => fake()->imageUrl(), // This generates a placeholder image URL
+            'password' => Hash::make('mamoon'),
+        ]);
+
+
+        Category::factory()->create([
+            'name' => 'Electronic',
+            'image' => fake()->imageUrl(),
+            'url' => fake()->url(),
+        ]);
+
+        Category::factory()->create([
+            'name' => 'Grocery',
+            'image' => fake()->imageUrl(),
+            'url' => fake()->url(),
+        ]);
+
+        Product::factory(10)->create();
+
+        // If you have relationships between users and roles, you can attach the roles to the users.
+        // Example:
+        // $adminUser->roles()->attach($adminRole->id);
+        // $normalUser->roles()->attach($userRole->id);
     }
 }
